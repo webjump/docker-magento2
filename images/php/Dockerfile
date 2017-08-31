@@ -1,7 +1,7 @@
 FROM php:7.0.20-fpm
 
 # Updating
-RUN apt-get update /
+RUN apt-get update \
     && apt-get upgrade -y 
 
 # Install bcmath
