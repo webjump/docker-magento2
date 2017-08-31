@@ -1,7 +1,8 @@
 FROM php:7.0.20-fpm
 
-RUN apt-get update
-# RUN apt-get upgrade -y
+# Updating
+RUN apt-get update /
+    && apt-get upgrade -y 
 
 # Install bcmath
 RUN docker-php-ext-install bcmath
@@ -42,6 +43,11 @@ RUN apt-get update && apt-get install -y libmemcached-dev zlib1g-dev \
 RUN pecl install xdebug-2.5.0 \
     && docker-php-ext-enable xdebug
 
+# Install Imagick
+RUN apt-get install -y libmagickwand-dev libmagickcore-dev \
+    && pecl install imagick-3.4.3 \
+    && docker-php-ext-enable imagick
+
 # Install Node.js
 RUN apt-get install -y nodejs
 
@@ -49,14 +55,11 @@ RUN apt-get install -y nodejs
 RUN apt install -y npm
 
 # Install grunt
-RUN npm install -g grunt-cli
+# RUN npm install -g grunt-cli
 #RUN npm install
 #RUN npm update
 
 #RUN pip3 install mage2gen
-
-# Install git
-RUN apt-get install -y git
 
 # Clear cache
 RUN apt-get clean
@@ -64,6 +67,7 @@ RUN apt-get purge -y --auto-remove
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+#/var/www/.composer/auth.json 
 
 RUN usermod -u 1000 www-data
 RUN groupmod -g 1000 www-data
