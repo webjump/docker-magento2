@@ -9,4 +9,3 @@ To have a consistent environment across all your projects or for all your develo
 You shouldn't use this docker service as your production environment nor for Magento 1 projects;
 3. How to use
 ----------
-
