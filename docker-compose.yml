@@ -20,6 +20,7 @@ services:
         networks:
             - front
             - back
+
     php:
         build:
             context: ./images/php
@@ -54,11 +55,6 @@ services:
         volumes:
             - database_data:/var/lib/mysql
             - ./dump:/dump
-        environment:
-            MYSQL_DATABASE: magento
-            MYSQL_ROOT_PASSWORD: magento
-            MYSQL_USER: magento
-            MYSQL_PASSWORD: magento
         networks:
             - back
 
@@ -68,6 +64,7 @@ services:
             - ./config.env
         networks:
             - back
+
     session:
         image: redis:alpine
         env_file:
@@ -81,20 +78,16 @@ services:
             - ./config.env
         ports:
             - 8080:80
-        environment:
-            MYSQL_ROOT_PASSWORD: magento
-            PMA_HOST: database
-            PMA_PORT: 3306
-            PMA_USER: root
-            PMA_PASSWORD: magento
         networks:
             - front
             - back
+
 networks:
     front:
         driver: bridge
     back:
         driver: bridge
+
 volumes:
     database_data:
         driver: local
