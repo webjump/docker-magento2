@@ -4,14 +4,11 @@ services:
     web:
         build:
             context: ./images/nginx
+        env_file:
+            - ./config.env
         ports:
             - 80:80
             - 443:443
-        environment:
-            ADMIN_URL: admin
-            ADMIN_LOCALE: pt_BR
-            APPLICATION_MODE: developer
-            UPDATE_URLS: enabled
         volumes:
             - ./logs/nginx:/var/log/nginx
             - ./config/nginx/conf.d/magento.conf:/etc/nginx/conf.d/magento.conf
@@ -26,6 +23,8 @@ services:
     php:
         build:
             context: ./images/php
+        env_file:
+            - ./config.env
         # cpu_count: 4
         cpu_percent: 0
         # cpus: 0.000
@@ -50,6 +49,8 @@ services:
 
     database:
         image: percona:latest
+        env_file:
+            - ./config.env
         volumes:
             - database_data:/var/lib/mysql
             - ./dump:/dump
@@ -63,15 +64,21 @@ services:
 
     cache:
         image: redis:alpine
+        env_file:
+            - ./config.env
         networks:
             - back
     session:
         image: redis:alpine
+        env_file:
+            - ./config.env
         networks:
             - back
 
     phpmyadmin:
         image: phpmyadmin/phpmyadmin:latest
+        env_file:
+            - ./config.env
         ports:
             - 8080:80
         environment:
