@@ -1,11 +1,11 @@
-; Copyright © 2013-2017 Magento, Inc. All rights reserved.
+; Copyright © Magento, Inc. All rights reserved.
 ; See COPYING.txt for license details.
 ; This file is for CGI/FastCGI installations.
 ; Try copying it to php5.ini, if it doesn't work
 
 ; adjust memory limit
 
-memory_limit = 64M
+memory_limit = 2G
 
 max_execution_time = 18000
 
@@ -25,8 +25,8 @@ suhosin.session.cryptua = off
 ; PHP for some reason ignores this setting in system php.ini
 ; and disables mcrypt if this line is missing in local php.ini
 
-extension=mcrypt.so
+;extension=mcrypt.so
 
 ; Disable PHP errors, notices and warnings output in production mode to prevent exposing sensitive information.
 
-display_errors = Off
+display_errors = on
