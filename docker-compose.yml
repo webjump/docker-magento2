@@ -51,6 +51,8 @@ services:
         image: percona:latest
         env_file:
             - ./config.env
+        ports:
+            - 3306:3306
         volumes:
             - database_data:/var/lib/mysql
             - ./dump:/dump
