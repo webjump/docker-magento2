@@ -22,7 +22,7 @@ services:
             - back
 
     php:
-        image: webjump/php:fpm-7.0.20
+        image: webjump/php:latest
         env_file:
             - ./config.env
         # cpu_count: 4
