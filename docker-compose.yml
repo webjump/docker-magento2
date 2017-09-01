@@ -2,8 +2,7 @@ version: '2.2'
 
 services:
     web:
-        build:
-            context: ./images/nginx
+        image: webjump\nginx:alpine
         env_file:
             - ./config.env
         ports:
@@ -23,8 +22,7 @@ services:
             - back
 
     php:
-        build:
-            context: ./images/php
+        image: webjump\php:fpm-7.0.20
         env_file:
             - ./config.env
         # cpu_count: 4
