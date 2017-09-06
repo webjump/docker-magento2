@@ -1,0 +1,123 @@
+version: '2.2'
+
+services:
+    web:
+        build:
+            context: ./images/nginx
+        env_file:
+            - ./config.env
+        ports:
+            - 80:80
+            - 443:443
+        volumes:
+            - ./logs/nginx:/var/log/nginx
+            - ./config/nginx/conf.d/magento.conf:/etc/nginx/conf.d/magento.conf
+            - ./config/nginx/conf.d/project.conf:/etc/nginx/conf.d/project.conf
+            - ./config/magento/nginx.conf.sample:/etc/nginx/conf.d/nginx.conf.sample
+        volumes_from:
+            - php
+        depends_on:
+            - php
+        networks:
+            - front
+            - back
+
+    php:
+        build:
+            context: ./images/php
+        env_file:
+            - ./config.env
+        # cpu_count: 4
+        cpu_percent: 0
+        # cpus: 0.000
+        cpu_shares: 0
+        # cpuset: 0,3
+        volumes:
+            - ./logs/php:/var/log/php
+            - ./logs/php/xdebug/:/var/log/php
+            - ./config/magento/php.ini.sample:/usr/local/etc/php/php.ini
+            - ./config/php/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+            - ./config/php/conf.d/php.ini:/usr/local/etc/php/conf.d/docker-php-ext-error.ini
+            - ./config/php/fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf
+            - ./config/php/bin/magento:/usr/local/bin/magento
+            - ./web:/var/www/html
+        depends_on:
+            - database
+            - cache
+            - session
+        user: www-data
+        networks:
+            - back
+
+    database:
+        image: percona:5.7.19
+        working_dir: /dump
+        env_file:
+            - ./config.env
+        ports:
+            - 3306:3306
+        volumes:
+            - database_data:/var/lib/mysql
+            - ./dump:/dump
+        networks:
+            - back
+
+    cache:
+        image: redis:alpine
+        env_file:
+            - ./config.env
+        networks:
+            - back
+
+    session:
+        image: redis:alpine
+        env_file:
+            - ./config.env
+        networks:
+            - back
+
+    elasticsearch:
+        build:
+            context: ./images/elasticsearch
+        env_file:
+            - ./config.env
+        volumes:
+            - elasticsearch_data:/usr/share/elasticsearch/data
+            - ./logs/elasticsearch:/var/log/elasticsearch
+            - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+        environment:
+            #- node.name=elasticsearch_1
+            - http.host=0.0.0.0
+            - transport.host=localhost
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        mem_limit: 1g
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+        ports:
+            - 9200:9200
+        networks:
+            - back
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin:latest
+        env_file:
+            - ./config.env
+        ports:
+            - 8080:80
+        networks:
+            - front
+            - back
+
+networks:
+    front:
+        driver: bridge
+    back:
+        driver: bridge
+
+volumes:
+    database_data:
+        driver: local
+    elasticsearch_data:
+        driver: local
