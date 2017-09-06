@@ -48,7 +48,8 @@ services:
             - back
 
     database:
-        image: percona:latest
+        image: percona:5.7.19
+        working_dir: /dump
         env_file:
             - ./config.env
         ports:
