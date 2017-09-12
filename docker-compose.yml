@@ -25,11 +25,6 @@ services:
         image: webjump/php:latest
         env_file:
             - ./config.env
-        # cpu_count: 4
-        cpu_percent: 0
-        # cpus: 0.000
-        cpu_shares: 0
-        # cpuset: 0,3
         volumes:
             - ./logs/php:/var/log/php
             - ./logs/php/xdebug/:/var/log/php
