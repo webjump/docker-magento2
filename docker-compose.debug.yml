@@ -84,12 +84,13 @@ services:
         volumes:
             - elasticsearch_data:/usr/share/elasticsearch/data
             - ./logs/elasticsearch:/var/log/elasticsearch
-            - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+            #- ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
         environment:
             #- node.name=elasticsearch_1
             - http.host=0.0.0.0
             - transport.host=localhost
             - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+            - "xpack.security.enabled=false"
         mem_limit: 1g
         ulimits:
             memlock:
@@ -97,6 +98,24 @@ services:
                 hard: -1
         ports:
             - 9200:9200
+            - 9300:9300
+        networks:
+            - back
+
+    logstash:
+        build:
+            context: ./images/logstash
+        command: logstash -f /etc/logstash/conf.d/logstash.conf
+        volumes:
+            - ./config/logstash:/etc/logstash/conf.d
+            - ./config/logstash/patterns:/opt/logstash/patterns
+        networks:
+            - back
+
+    kibana:
+        image: docker.elastic.co/kibana/kibana:5.6.0
+        ports:
+            - 5601:5601
         networks:
             - back
 
