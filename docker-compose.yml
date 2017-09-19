@@ -10,13 +10,11 @@ services:
             - 443:443
         volumes:
             - ./logs/nginx:/var/log/nginx
-            - ./config/nginx/conf.d/magento.conf:/etc/nginx/conf.d/magento.conf
-            - ./config/nginx/conf.d/project.conf:/etc/nginx/conf.d/project.conf
-            - ./config/magento/nginx.conf.sample:/etc/nginx/conf.d/nginx.conf.sample
-        volumes_from:
-            - php
+            - ./config/nginx:/etc/nginx
+            - ./web:/var/www/html
         depends_on:
             - php
+        command: sh -c "envsubst '$$PROJECT_ROOT $$NGINX_PORT $$NGINX_SERVER_NAME' < /etc/nginx/sites/project.conf.template > /etc/nginx/sites/project.conf && nginx -g 'daemon off;'"
         networks:
             - front
             - back
@@ -33,7 +31,7 @@ services:
             - ./config/php/conf.d/php.ini:/usr/local/etc/php/conf.d/docker-php-ext-error.ini
             - ./config/php/fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf
             - ./config/php/bin/magento:/usr/local/bin/magento
-            - ./web/html:/var/www/html
+            - ./web:/var/www/html
         depends_on:
             - database
             - cache
