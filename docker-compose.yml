@@ -13,34 +13,9 @@ services:
             - ./config/nginx/conf.d/magento.conf:/etc/nginx/conf.d/magento.conf
             - ./config/nginx/conf.d/project.conf:/etc/nginx/conf.d/project.conf
             - ./config/magento/nginx.conf.sample:/etc/nginx/conf.d/nginx.conf.sample
-        volumes_from:
-            - php
-        depends_on:
-            - php
+            - ./web/html:/var/www/html
         networks:
             - front
-            - back
-
-    elasticsearch:
-        image: webjump/elasticsearch:build-test
-        volumes:
-            - elasticsearch_data:/usr/share/elasticsearch/data
-            - ./logs/elasticsearch:/var/log/elasticsearch
-            - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-        environment:
-            #- node.name=elasticsearch_1
-            - http.host=0.0.0.0
-            - transport.host=localhost
-            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-        mem_limit: 1g
-        ulimits:
-            memlock:
-                soft: -1
-                hard: -1
-        ports:
-            - 9200:9200
-            - 9300:9300
-        networks:
             - back
 
     php:
@@ -57,10 +32,36 @@ services:
             - ./config/php/bin/magento:/usr/local/bin/magento
             - ./web/html:/var/www/html
         depends_on:
+            - web
             - database
-            - cache
-            - session
         user: www-data
+        networks:
+            - back
+
+    elasticsearch:
+        # image: webjump/elasticsearch:build-test
+        build:
+            context: ./images/elasticsearch
+        volumes:
+            - elasticsearch_data:/usr/share/elasticsearch/data
+            - ./logs/elasticsearch:/var/log/elasticsearch
+            - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+        depends_on:
+            - web
+            - database
+            - php
+        environment:
+            - http.host=0.0.0.0
+            - transport.host=localhost
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        mem_limit: 1g
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+        ports:
+            - 9200:9200
+            - 9300:9300
         networks:
             - back
 
@@ -93,6 +94,8 @@ services:
 
     phpmyadmin:
         image: phpmyadmin/phpmyadmin:latest
+        depends_on:
+            - database
         env_file:
             - ./config.env
         ports:
