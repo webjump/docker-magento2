@@ -2,7 +2,9 @@ version: '2.2'
 
 services:
     web:
-        image: webjump/nginx:alpine
+        # image: webjump/nginx:alpine
+        build:
+            context: ./images/nginx
         env_file:
             - ./config.env
         ports:
@@ -13,6 +15,8 @@ services:
             - ./config/nginx/conf.d/magento.conf:/etc/nginx/conf.d/magento.conf
             - ./config/nginx/conf.d/project.conf:/etc/nginx/conf.d/project.conf
             - ./config/magento/nginx.conf.sample:/etc/nginx/conf.d/nginx.conf.sample
+            - ./config/nginx/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+            - ./config/nginx/rsyslog/rsyslog.d/local0.conf:/etc/rsyslog.d/local0.conf
         volumes_from:
             - php
         depends_on:
@@ -42,6 +46,36 @@ services:
             - 9300:9300
         networks:
             - back
+
+
+    mongo:
+        image: mongo:3
+        networks: 
+            - back
+
+    graylog:
+        image: graylog/graylog:2.3.1-1
+        environment:
+            # CHANGE ME!
+            - GRAYLOG_PASSWORD_SECRET=somepasswordpepper
+            # Password: admin
+            - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+            - GRAYLOG_WEB_ENDPOINT_URI=http://127.0.0.1:9000/api
+        ports:
+            # Graylog web interface and REST API
+            - 9000:9000
+            # Syslog TCP
+            - 514:514
+            # Syslog UDP
+            - 514:514/udp
+            # GELF TCP
+            - 12201:12201
+            # GELF UDP
+            - 12201:12201/udp
+        networks: 
+            - back
+
+
 
     php:
         image: webjump/php:latest
