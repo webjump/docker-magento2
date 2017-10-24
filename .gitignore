@@ -1,5 +1,8 @@
 /.idea
 .vscode
 config/nginx/sites/project.conf
-logs/*
+logs/nginx/*
+logs/php/*
+!logs/nginx/.gitkeep
+!logs/php/.gitkeep
 web/*
