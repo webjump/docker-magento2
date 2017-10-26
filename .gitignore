@@ -3,3 +3,4 @@
 config/nginx/sites/project.conf
 logs/*
 web/*
+images/
