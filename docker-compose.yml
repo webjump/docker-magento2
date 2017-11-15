@@ -26,7 +26,7 @@ services:
             - ./config.env
         volumes:
             - ./logs/php:/var/log/php
-            - ./logs/php/xdebug/:/var/log/php
+            - ./logs/php/xdebug/:/var/log/php/xdebug
             - ./config/magento/php.ini.sample:/usr/local/etc/php/php.ini
             - ./config/php/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
             - ./config/php/conf.d/php.ini:/usr/local/etc/php/conf.d/docker-php-ext-error.ini
