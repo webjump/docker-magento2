@@ -4,9 +4,11 @@
 CWD=$(pwd)
 CONFIG_FILE='config.env'
 DOCKER_COMPOSE_FILE='docker-compose.yml'
-PROJECT_NAME=$(basename $PWD)
+BASENAME_PWD=$(basename $PWD)
+PROJECT_NAME="${BASENAME_PWD//-}" # Remove hyphens from basename pwd
 COMMANDS="${@:1}"
 CONTAINER_PHP="${PROJECT_NAME}_php_1"
+
 
 # TODO: MUST fix, make jump global command work in all subfolders of project 
 # instead of only project root
@@ -37,6 +39,9 @@ if [ "$CAN_RUN_COMMANDS" = false ]; then
     echo 'Exiting...'
     exit 1
 fi
+
+# TODO: fix, when running docker-compose down and then up again, needs to install
+# python dependencies
 
 # If this is the first time executing jump command, set things up!
 if [ ! -f /usr/local/bin/jump ]; then
