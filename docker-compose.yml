@@ -25,6 +25,7 @@ services:
         env_file:
             - ./config.env
         volumes:
+            - ~/.ssh/:/var/www/.ssh
             - ./logs/php:/var/log/php
             - ./logs/php/xdebug/:/var/log/php/xdebug
             - ./config/magento/php.ini.sample:/usr/local/etc/php/php.ini
