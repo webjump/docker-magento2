@@ -13,9 +13,10 @@ services:
             - ./logs/nginx:/var/log/nginx
             - ./config/nginx:/etc/nginx
             - ./web:/var/www/html
+            - ./scripts/nginx-config.sh:/usr/local/bin/nginx-config.sh
         depends_on:
             - php
-        command: sh -c "envsubst '$$PROJECT_ROOT $$NGINX_PORT $$NGINX_SERVER_NAME' < /etc/nginx/sites/project.conf.template > /etc/nginx/sites/project.conf && nginx -g 'daemon off;'"
+        command: sh -c "chmod +x /usr/local/bin/scripts/nginx-conf.sh && nginx-config.sh"
         networks:
             - front
             - back
